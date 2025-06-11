@@ -79,3 +79,4 @@ client.on('guildMemberAdd', async (member) => {
 
 // ✅ Login
 client.login(process.env.DISCORD_TOKEN);
+// trigger redeploy
