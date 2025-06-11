@@ -10,8 +10,8 @@ const client = new Client({
   ],
 });
 
-const WELCOME_CHANNEL_NAME = 'welcome';  // make sure this channel exists
-const CATEGORY_NAME = 'Clients Companies';  // your category name
+const WELCOME_CHANNEL_NAME = 'welcome'; // ✅ Ensure this exists in your server
+const CATEGORY_NAME = 'Clients Companies'; // ✅ Auto-created if not found
 
 client.on('ready', () => {
   console.log(`✅ Bot is ready as ${client.user.tag}`);
@@ -25,14 +25,15 @@ client.on('guildMemberAdd', async (member) => {
 
   if (!welcomeChannel) return;
 
-  welcomeChannel.send(`Welcome, ${member}! Start your ecommerce journey: Enter your Company Name.`);
+  welcomeChannel.send(`👋 Welcome, ${member}! Please enter your **Company Name** to get started.`);
 
-  const filter = (m) => m.author.id === member.id;
+  const filter = m => m.author.id === member.id;
   const collector = welcomeChannel.createMessageCollector({ filter, max: 1, time: 60000 });
 
   collector.on('collect', async (msg) => {
     const companyName = msg.content.trim();
 
+    // Find or create the category
     let category = guild.channels.cache.find(
       ch => ch.name === CATEGORY_NAME && ch.type === ChannelType.GuildCategory
     );
@@ -44,6 +45,7 @@ client.on('guildMemberAdd', async (member) => {
       });
     }
 
+    // Create private channel
     const privateChannel = await guild.channels.create({
       name: companyName.toLowerCase().replace(/\s+/g, '-'),
       type: ChannelType.GuildText,
@@ -64,8 +66,8 @@ client.on('guildMemberAdd', async (member) => {
       ],
     });
 
-    privateChannel.send(`Welcome, ${member}! This is your private channel for **${companyName}**. Let's talk!`);
-    welcomeChannel.send(`✅ Your private channel "**${companyName}**" has been created! Check the **${CATEGORY_NAME}** category.`);
+    privateChannel.send(`🚀 Welcome, ${member}! This is your private channel for **${companyName}**. Let's build something great!`);
+    welcomeChannel.send(`✅ Your private channel "**${companyName}**" has been created in **${CATEGORY_NAME}**.`);
   });
 
   collector.on('end', collected => {
@@ -75,6 +77,5 @@ client.on('guildMemberAdd', async (member) => {
   });
 });
 
-require('dotenv').config();
+// ✅ Login
 client.login(process.env.DISCORD_TOKEN);
-console.log("Token:", process.env.DISCORD_TOKEN);
